@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cat : Animal
+public class Cat : Animal // INHERITANCE: Cat继承自Animal
 {
-    public override void Jump()
+    void Awake()
+    {
+        vitalityDecreaseRate = 5; // Cat 每秒减少5点活力值
+    }
+
+    public override void Jump() // POLYMORPHISM: 重写父类的Jump方法
     {
         Debug.Log("Cat jumps gracefully.");
-        // 添加跳跃逻辑，例如使用刚体增加向上的力
-        GetComponent<Rigidbody>().AddForce(Vector3.up * 5, ForceMode.Impulse);
-        isGrounded = false;
+        PerformJump(5);
     }
 }
-

@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cow : Animal
+public class Cow : Animal // INHERITANCE: Cow继承自Animal
 {
-    public override void Jump()
+    void Awake()
+    {
+        vitalityDecreaseRate = 15; // Cow 每秒减少2点活力值
+    }
+
+    public override void Jump() // POLYMORPHISM: 重写父类的Jump方法
     {
         Debug.Log("Cow jumps heavily.");
-        // 添加跳跃逻辑，例如使用刚体增加向上的力
-        GetComponent<Rigidbody>().AddForce(Vector3.up * 3, ForceMode.Impulse);
-        isGrounded = false;
+        PerformJump(3);
     }
 }
 

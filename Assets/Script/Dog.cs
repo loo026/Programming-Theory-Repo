@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dog : Animal
+public class Dog : Animal // INHERITANCE: Dog继承自Animal
 {
-    public override void Jump()
+    void Awake()
+    {
+        vitalityDecreaseRate = 10; // Dog 每秒减少3点活力值
+    }
+
+    public override void Jump() // POLYMORPHISM: 重写父类的Jump方法
     {
         Debug.Log("Dog jumps energetically.");
-        // 添加跳跃逻辑，例如使用刚体增加向上的力
-        GetComponent<Rigidbody>().AddForce(Vector3.up * 4, ForceMode.Impulse);
-        isGrounded = false;
+        PerformJump(4);
     }
 }
 
