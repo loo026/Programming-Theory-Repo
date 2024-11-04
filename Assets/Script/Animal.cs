@@ -1,22 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
-// 基类：Animal
 public abstract class Animal : MonoBehaviour // ABSTRACTION
 {
     protected bool isGrounded = true;
     private GameObject textCanvas;
     private Slider vitalitySlider;
 
-    // 初始活力值
-    private int vitality = 100;
+    private int vitality = 100; // 初始活力值
+    protected int vitalityDecreaseRate; // 每秒减少的活力值
 
-    // 活力减少速率（每秒减少多少点活力）// ENCAPSULATION
-    protected int vitalityDecreaseRate;
-
-    public int Vitality // ENCAPSULATION: 提供了受控访问的属性
+    public int Vitality // ENCAPSULATION
     {
         get { return vitality; }
         private set
@@ -30,10 +25,10 @@ public abstract class Animal : MonoBehaviour // ABSTRACTION
     {
         InitializeTextCanvas();
         InitializeVitalityUI();
-        StartCoroutine(ReduceVitalityOverTime());
+        StartCoroutine(CheckGameStartAndReduceVitality()); // 修改为新的协程
     }
 
-    // 初始化TextCanvas // ABSTRACTION
+    // 初始化TextCanvas
     private void InitializeTextCanvas()
     {
         textCanvas = transform.Find("TextCanvas")?.gameObject;
@@ -43,7 +38,7 @@ public abstract class Animal : MonoBehaviour // ABSTRACTION
         }
     }
 
-    // 初始化VitalityUI（能量条）
+    // 初始化VitalityUI
     private void InitializeVitalityUI()
     {
         vitalitySlider = transform.Find("VitalityCanvas/Slider")?.GetComponent<Slider>();
@@ -63,24 +58,32 @@ public abstract class Animal : MonoBehaviour // ABSTRACTION
         }
     }
 
-    // 每秒减少活力值的协程
-    private IEnumerator ReduceVitalityOverTime()
+    // 检查游戏是否开始并减少活力值的协程
+    private IEnumerator CheckGameStartAndReduceVitality()
     {
         while (true)
         {
-            yield return new WaitForSeconds(1);
-            Vitality -= vitalityDecreaseRate; // 每秒减少指定速率的活力值
-            Debug.Log($"{gameObject.name} Vitality decreased to: {Vitality}");
-
-            // 停止协程如果活力值达到0
-            if (Vitality <= 0)
+            // 检查游戏是否已经开始
+            if (GameManager.isGameStarted)
             {
-                yield break;
+                yield return new WaitForSeconds(1);
+                Vitality -= vitalityDecreaseRate; // 每秒减少指定速率的活力值
+                Debug.Log($"{gameObject.name} Vitality decreased to: {Vitality}");
+
+                // 停止协程如果活力值达到0
+                if (Vitality <= 0)
+                {
+                    yield break;
+                }
+            }
+            else
+            {
+                yield return null; // 等待下一帧，继续检查游戏是否开始
             }
         }
     }
 
-    // 定义一个抽象的跳跃方法 // ABSTRACTION
+    // 定义一个抽象的跳跃方法
     public abstract void Jump();
 
     private void OnMouseDown()
@@ -107,7 +110,7 @@ public abstract class Animal : MonoBehaviour // ABSTRACTION
         isGrounded = false;
     }
 
-    // 控制文字显示或隐藏 // ABSTRACTION
+    // 控制文字显示或隐藏
     private void SetTextVisibility(bool isVisible)
     {
         if (textCanvas != null)
